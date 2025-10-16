@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "build": "npm install && npm run prisma:generate && tsc",
+    "build": "npm run prisma:generate && tsc",
     "build:prod": "npm ci --only=production && npm run prisma:generate && tsc",
     "start": "node dist/index.js",
     "start:prod": "node start-production.js",
@@ -40,7 +40,14 @@
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",
-    "@types/pg": "^8.15.5",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.8.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.20",
+    "@types/uuid": "^10.0.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -56,20 +63,11 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.8.0",
-    "@types/node-cron": "^3.0.11",
-    "@types/nodemailer": "^6.4.20",
-    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
     "eslint": "^9.37.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
-    "prisma": "^6.17.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
