@@ -39,6 +39,7 @@
     "npm": ">=8.0.0"
   },
   "dependencies": {
+    "@prisma/client": "^6.17.1",
     "@types/pg": "^8.15.5",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -49,12 +50,12 @@
     "nodemailer": "^6.9.15",
     "openai": "^6.3.0",
     "pg": "^8.16.3",
+    "prisma": "^6.17.1",
     "stripe": "^19.1.0",
     "uuid": "^10.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@prisma/client": "^6.17.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
