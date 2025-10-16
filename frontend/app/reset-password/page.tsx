@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { KeyRound, Lock, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
@@ -14,13 +14,14 @@ function ResetPasswordPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [userId, setUserId] = useState('');
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ otp?: string; newPassword?: string; confirmPassword?: string; general?: string }>({});
   const [success, setSuccess] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
@@ -31,10 +32,50 @@ function ResetPasswordPageContent() {
     }
   }, [searchParams]);
 
+  const handleOtpChange = (index: number, value: string) => {
+    // Remove any non-numeric characters
+    const numValue = value.replace(/\D/g, '');
+    
+    // Handle paste
+    if (numValue.length > 1) {
+      const pasted = numValue.slice(0, 6);
+      const newOtp = [...otp];
+      pasted.split('').forEach((char, i) => {
+        if (index + i < 6) {
+          newOtp[index + i] = char;
+        }
+      });
+      setOtp(newOtp);
+      
+      // Focus on the next empty input or the last one
+      const nextIndex = Math.min(index + pasted.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+      setErrors({ ...errors, otp: undefined });
+    } else {
+      // Single character input
+      const newOtp = [...otp];
+      newOtp[index] = numValue;
+      setOtp(newOtp);
+      
+      // Move to next input if value is entered
+      if (numValue && index < 5) {
+        inputRefs.current[index + 1]?.focus();
+      }
+      setErrors({ ...errors, otp: undefined });
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
   const validateForm = () => {
     const newErrors: typeof errors = {};
+    const otpValue = otp.join('');
     
-    if (!otp || otp.length !== 6) {
+    if (!otpValue || otpValue.length !== 6) {
       newErrors.otp = 'Please enter a valid 6-digit code';
     }
     
@@ -70,7 +111,8 @@ function ResetPasswordPageContent() {
     }
 
     try {
-      await resetPassword({ userId, otp, newPassword }).unwrap();
+      const otpValue = otp.join('');
+      await resetPassword({ userId, otp: otpValue, newPassword }).unwrap();
       setSuccess(true);
     } catch (err: unknown) {
       console.error('Reset password error:', err);
@@ -167,21 +209,31 @@ function ResetPasswordPageContent() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Verification Code</label>
-              <Input
-                type="text"
-                placeholder="Enter 6-digit code"
-                value={otp}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                  setOtp(value);
-                  if (errors.otp) setErrors({ ...errors, otp: undefined });
-                }}
-                className={`text-center text-xl tracking-widest ${errors.otp ? 'border-red-500' : ''}`}
-                maxLength={6}
-                disabled={isLoading}
-              />
+              <div className="flex justify-center gap-2">
+                {otp.map((digit, index) => (
+                  <Input
+                    key={index}
+                    ref={(el) => { inputRefs.current[index] = el; }}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    className={`w-12 h-12 text-center text-xl font-bold border-2 ${
+                      errors.otp ? 'border-red-500' : 'focus:border-purple-500'
+                    }`}
+                    maxLength={1}
+                    disabled={isLoading}
+                    autoComplete="off"
+                  />
+                ))}
+              </div>
+              <p className="text-xs text-center text-gray-500">
+                Enter the 6-digit code sent to your email
+              </p>
               {errors.otp && (
-                <p className="text-sm text-red-500">{errors.otp}</p>
+                <p className="text-sm text-center text-red-500">{errors.otp}</p>
               )}
             </div>
 
