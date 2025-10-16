@@ -109,7 +109,9 @@ export const mockMessages: Message[] = [
 // Subscription Plans
 export const mockPlans: SubscriptionPlan[] = [
   {
+    id: 'basic-plan',
     tier: 'Basic',
+    name: 'Basic Plan',
     maxMessages: 10,
     pricing: {
       monthly: 9.99,
@@ -123,7 +125,9 @@ export const mockPlans: SubscriptionPlan[] = [
     ],
   },
   {
+    id: 'pro-plan',
     tier: 'Pro',
+    name: 'Pro Plan',
     maxMessages: 100,
     pricing: {
       monthly: 29.99,
@@ -139,7 +143,9 @@ export const mockPlans: SubscriptionPlan[] = [
     ],
   },
   {
+    id: 'enterprise-plan',
     tier: 'Enterprise',
+    name: 'Enterprise Plan',
     maxMessages: -1,
     pricing: {
       monthly: 99.99,

@@ -196,7 +196,7 @@ export function ChatSidebar({
           </div>
         ) : (
           Object.entries(groupedConversations)
-            .filter(([_, convs]) => convs.length > 0)
+            .filter(([, convs]) => convs.length > 0)
             .map(([group, convs]) => (
               <div key={group} className="mb-4">
                 <h3 className="mb-2 px-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
@@ -256,7 +256,6 @@ export function ChatSidebar({
         onClose={cancelDelete}
         onConfirm={confirmDelete}
         title="Delete chat?"
-        itemName={conversationToDelete?.title || ''}
         isLoading={isDeleting}
       />
     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { setRequiresEmailVerification, setRequiresDeviceVerification, setUser, setPendingPlanSelection } from '@/lib/store/slices/authSlice';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
@@ -110,7 +110,7 @@ export default function LoginPage() {
       let errorMessage = 'Login failed. Please check your credentials and try again.';
       
       if (err && typeof err === 'object') {
-        const error = err as any;
+        const error = err as { data?: { message?: string; error?: string }; status?: number; message?: string };
         
         // Check for RTK Query error structure
         if (error.data?.message) {
@@ -126,7 +126,7 @@ export default function LoginPage() {
           errorMessage = 'Invalid email or password. Please check your credentials and try again.';
         } else if (error.status === 429) {
           errorMessage = 'Too many login attempts. Please try again later.';
-        } else if (error.status >= 500) {
+        } else if (error.status && error.status >= 500) {
           errorMessage = 'Server error. Please try again later.';
         }
       }
@@ -257,6 +257,21 @@ export default function LoginPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   );
 }
 

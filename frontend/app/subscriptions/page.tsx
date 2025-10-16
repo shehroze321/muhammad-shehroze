@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { PricingCard } from '@/components/subscription/PricingCard';
 import { Header } from '@/components/layout/Header';
 import { useAppSelector } from '@/lib/store/hooks';
@@ -391,5 +390,16 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
 }
 
 export default function SubscriptionsPage() {
-  return <SubscriptionsPageContent />;
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SubscriptionsPageContent />
+    </Suspense>
+  );
 }

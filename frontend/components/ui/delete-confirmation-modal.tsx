@@ -1,14 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface DeleteConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   title: string;
-  itemName: string;
   isLoading?: boolean;
 }
 
@@ -17,7 +16,6 @@ export function DeleteConfirmationModal({
   onClose,
   onConfirm,
   title,
-  itemName,
   isLoading = false,
 }: DeleteConfirmationModalProps) {
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChatSidebar } from '@/components/layout/ChatSidebar';
 import { Header } from '@/components/layout/Header';
@@ -571,7 +571,16 @@ function EmptyState({ onExampleClick }: { onExampleClick: (text: string) => void
 export default function ChatPage() {
   return (
     <ProtectedRoute requireAuth={false}>
-      <ChatPageContent />
+      <Suspense fallback={
+        <div className="flex h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-primary"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      }>
+        <ChatPageContent />
+      </Suspense>
     </ProtectedRoute>
   );
 }

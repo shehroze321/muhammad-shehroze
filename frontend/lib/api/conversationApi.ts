@@ -46,9 +46,9 @@ export const conversationApi = apiSlice.injectEndpoints({
     getConversations: builder.query<ConversationsResponse, GetConversationsParams | void>({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
-        if (params.search) searchParams.append('search', params.search);
-        if (params.page) searchParams.append('page', params.page.toString());
-        if (params.limit) searchParams.append('limit', params.limit.toString());
+        if (params && params.search) searchParams.append('search', params.search);
+        if (params && params.page) searchParams.append('page', params.page.toString());
+        if (params && params.limit) searchParams.append('limit', params.limit.toString());
         
         const queryString = searchParams.toString();
         return `/conversations${queryString ? `?${queryString}` : ''}`;

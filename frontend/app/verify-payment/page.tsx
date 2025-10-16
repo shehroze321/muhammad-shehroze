@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Loader2, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
@@ -10,7 +10,7 @@ import { useAppSelector } from '@/lib/store/hooks';
 
 type VerificationStatus = 'verifying' | 'success' | 'error' | 'no-session';
 
-export default function VerifyPaymentPage() {
+function VerifyPaymentPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -150,6 +150,21 @@ export default function VerifyPaymentPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+export default function VerifyPaymentPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-primary"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <VerifyPaymentPageContent />
+    </Suspense>
   );
 }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppSelector } from '@/lib/store/hooks';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { useGetPlansQuery, useCreateCheckoutSessionMutation } from '@/lib/api/su
 import { Sparkles, ArrowLeft, CreditCard, Lock } from 'lucide-react';
 import Link from 'next/link';
 
-export default function PaymentPage() {
+function PaymentPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, user, pendingPlanSelection } = useAppSelector((state) => state.auth);
@@ -210,5 +210,20 @@ export default function PaymentPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-primary"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <PaymentPageContent />
+    </Suspense>
   );
 }

@@ -7,13 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useVerifyEmailMutation, useResendVerificationMutation } from '@/lib/api/authApi';
-import { useAppSelector, useAppDispatch } from '@/lib/store/hooks';
-import { setUser } from '@/lib/store/slices/authSlice';
+import { useAppSelector } from '@/lib/store/hooks';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function VerifyEmailPage() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const { pendingUserId, pendingUserEmail, user, pendingPlanSelection } = useAppSelector((state) => state.auth);
   
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -49,7 +47,7 @@ export default function VerifyEmailPage() {
 
     try {
       console.log('Verifying email with:', { userId, otp: otpString });
-      const result = await verifyEmail({ userId, otp: otpString }).unwrap();
+      await verifyEmail({ userId, otp: otpString }).unwrap();
       
       setSuccess('Email verified successfully!');
       
@@ -65,7 +63,10 @@ export default function VerifyEmailPage() {
     } catch (err: unknown) {
       console.error('Email verification error:', err);
       const errorData = err as { data?: { error?: string | { message?: string } } };
-      setError(errorData?.data?.error?.message || errorData?.data?.error || 'Verification failed. Please check your code and try again.');
+      const errorMessage = typeof errorData?.data?.error === 'string' 
+        ? errorData.data.error 
+        : errorData?.data?.error?.message || 'Verification failed. Please check your code and try again.';
+      setError(errorMessage);
     }
   };
 
@@ -124,7 +125,10 @@ export default function VerifyEmailPage() {
       setSuccess('Verification code sent! Please check your email.');
     } catch (err: unknown) {
       const errorData = err as { data?: { error?: string | { message?: string } } };
-      setError(errorData?.data?.error?.message || errorData?.data?.error || 'Failed to resend code. Please try again.');
+      const errorMessage = typeof errorData?.data?.error === 'string' 
+        ? errorData.data.error 
+        : errorData?.data?.error?.message || 'Failed to resend code. Please try again.';
+      setError(errorMessage);
     }
   };
 
@@ -166,7 +170,7 @@ export default function VerifyEmailPage() {
                 {otp.map((digit, index) => (
                   <Input
                     key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
+                    ref={(el) => { inputRefs.current[index] = el; }}
                     type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"
