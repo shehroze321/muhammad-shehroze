@@ -39,9 +39,6 @@ export default function ForgotPasswordPage() {
       // The API returns { data: { message, userId } }
       if (result.data?.userId) {
         setUserId(result.data.userId);
-      } else if (result.userId) {
-        // Fallback in case the response structure changes
-        setUserId(result.userId);
       }
       setSuccess(true);
     } catch (err: unknown) {
