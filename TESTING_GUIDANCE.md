@@ -1255,9 +1255,250 @@ stripe trigger customer.subscription.deleted
 
 ---
 
+## Frontend Testing Guide
+
+### Manual Frontend Testing
+
+#### 1. User Interface Testing
+
+**Landing Page:**
+- ✅ Verify responsive design on desktop, tablet, mobile
+- ✅ Test navigation links and buttons
+- ✅ Verify call-to-action buttons work
+- ✅ Check dark/light mode toggle
+- ✅ Test hero section animations and interactions
+
+**Authentication Pages:**
+- ✅ Test registration form validation
+- ✅ Test login form with valid/invalid credentials
+- ✅ Test email verification flow
+- ✅ Test password reset functionality
+- ✅ Verify error messages display correctly
+- ✅ Test form submission loading states
+
+**Chat Interface:**
+- ✅ Test message input and sending
+- ✅ Verify message history display
+- ✅ Test conversation sidebar functionality
+- ✅ Test search and filter conversations
+- ✅ Verify quota display and updates
+- ✅ Test responsive chat layout
+
+**Subscription Pages:**
+- ✅ Test plan selection and comparison
+- ✅ Verify pricing display (monthly/yearly)
+- ✅ Test Stripe checkout integration
+- ✅ Verify payment success/failure handling
+- ✅ Test subscription status display
+
+#### 2. Component Testing
+
+**Header Component:**
+- ✅ Test user authentication state display
+- ✅ Verify quota counter updates
+- ✅ Test navigation menu functionality
+- ✅ Test user profile dropdown
+
+**Chat Components:**
+- ✅ Test MessageBubble component rendering
+- ✅ Verify ChatInput form submission
+- ✅ Test QuotaWidget updates
+- ✅ Verify ChatSidebar conversation list
+
+**UI Components:**
+- ✅ Test Button component variants
+- ✅ Verify Card component layouts
+- ✅ Test Modal dialogs functionality
+- ✅ Verify Form validation and error states
+
+#### 3. State Management Testing
+
+**Redux Store:**
+- ✅ Test authentication state updates
+- ✅ Verify user data persistence
+- ✅ Test conversation state management
+- ✅ Verify subscription state updates
+
+**RTK Query:**
+- ✅ Test API data fetching
+- ✅ Verify cache invalidation
+- ✅ Test optimistic updates
+- ✅ Verify error handling
+
+#### 4. Navigation and Routing
+
+**Page Navigation:**
+- ✅ Test all route transitions
+- ✅ Verify protected route access control
+- ✅ Test browser back/forward navigation
+- ✅ Verify deep linking functionality
+
+**Route Protection:**
+- ✅ Test unauthenticated access to protected routes
+- ✅ Verify redirects to login page
+- ✅ Test authenticated access to public routes
+- ✅ Verify email verification requirement
+
+#### 5. Performance Testing
+
+**Loading Performance:**
+- ✅ Test initial page load times
+- ✅ Verify lazy loading of components
+- ✅ Test image optimization
+- ✅ Verify bundle size optimization
+
+**Runtime Performance:**
+- ✅ Test smooth scrolling and interactions
+- ✅ Verify no memory leaks during navigation
+- ✅ Test large conversation lists
+- ✅ Verify efficient re-rendering
+
+#### 6. Cross-Browser Testing
+
+**Desktop Browsers:**
+- ✅ Chrome (latest)
+- ✅ Firefox (latest)
+- ✅ Safari (latest)
+- ✅ Edge (latest)
+
+**Mobile Browsers:**
+- ✅ iOS Safari
+- ✅ Android Chrome
+- ✅ Mobile responsive design
+- ✅ Touch interactions
+
+#### 7. Accessibility Testing
+
+**Keyboard Navigation:**
+- ✅ Test tab navigation through forms
+- ✅ Verify focus indicators
+- ✅ Test keyboard shortcuts
+- ✅ Verify skip links functionality
+
+**Screen Reader Support:**
+- ✅ Test ARIA labels and descriptions
+- ✅ Verify semantic HTML structure
+- ✅ Test form error announcements
+- ✅ Verify dynamic content updates
+
+#### 8. Error Handling Testing
+
+**Network Errors:**
+- ✅ Test offline functionality
+- ✅ Verify API error display
+- ✅ Test retry mechanisms
+- ✅ Verify graceful degradation
+
+**User Input Errors:**
+- ✅ Test form validation errors
+- ✅ Verify error message clarity
+- ✅ Test error recovery flows
+- ✅ Verify user guidance
+
+### Frontend Testing Tools
+
+#### Browser Developer Tools
+```javascript
+// Test API responses in Network tab
+// Check Console for errors
+// Verify localStorage/sessionStorage
+// Test responsive design in Device toolbar
+```
+
+#### React Developer Tools
+```javascript
+// Inspect component state
+// Monitor props changes
+// Debug Redux store
+// Profile component performance
+```
+
+#### Testing Libraries (Recommended Setup)
+```bash
+# Install testing dependencies
+npm install --save-dev @testing-library/react @testing-library/jest-dom @testing-library/user-event jest jest-environment-jsdom
+
+# Example test structure:
+src/
+  components/
+    __tests__/
+      Button.test.tsx
+      ChatInput.test.tsx
+  pages/
+    __tests__/
+      login.test.tsx
+      chat.test.tsx
+```
+
+#### Example Component Test
+```javascript
+// Button.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Button } from '../Button';
+
+test('renders button with text', () => {
+  render(<Button>Click me</Button>);
+  expect(screen.getByText('Click me')).toBeInTheDocument();
+});
+
+test('calls onClick when clicked', () => {
+  const handleClick = jest.fn();
+  render(<Button onClick={handleClick}>Click me</Button>);
+  fireEvent.click(screen.getByText('Click me'));
+  expect(handleClick).toHaveBeenCalledTimes(1);
+});
+```
+
+### Frontend Testing Checklist
+
+#### Pre-Testing Setup
+- [ ] Backend server running on port 5000
+- [ ] Frontend server running on port 3000
+- [ ] Database seeded with test data
+- [ ] Stripe test mode enabled
+- [ ] Email service configured
+
+#### Core Functionality Tests
+- [ ] User registration and email verification
+- [ ] User login and authentication
+- [ ] Chat message sending and receiving
+- [ ] Conversation creation and management
+- [ ] Subscription plan selection and purchase
+- [ ] Profile management and updates
+- [ ] Password reset functionality
+
+#### UI/UX Tests
+- [ ] Responsive design across devices
+- [ ] Dark/light mode switching
+- [ ] Loading states and animations
+- [ ] Error message display
+- [ ] Form validation feedback
+- [ ] Navigation and routing
+
+#### Integration Tests
+- [ ] API integration with backend
+- [ ] Stripe payment processing
+- [ ] Email verification flow
+- [ ] Real-time chat functionality
+- [ ] State persistence across sessions
+
+#### Performance Tests
+- [ ] Page load times under 3 seconds
+- [ ] Smooth scrolling and interactions
+- [ ] Efficient memory usage
+- [ ] Optimized bundle size
+- [ ] Lazy loading implementation
+
+#### Security Tests
+- [ ] Protected route access control
+- [ ] XSS prevention
+- [ ] CSRF protection
+- [ ] Secure token handling
+- [ ] Input sanitization
+
 ## Support
 
 For detailed implementation, refer to:
 - **README.md** - Setup and configuration
-- **DEPLOYMENT_GUIDE.md** - Production deployment
-- **PROJECT_READY.md** - Pre-deployment checklist
+- **RENDER_DEPLOYMENT_GUIDE.md** - Production deployment
+- **TESTING_GUIDANCE.md** - This comprehensive testing guide
