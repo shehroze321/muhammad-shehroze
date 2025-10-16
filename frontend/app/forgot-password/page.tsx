@@ -36,8 +36,39 @@ export default function ForgotPasswordPage() {
       await forgotPassword({ email }).unwrap();
       setSuccess(true);
     } catch (err: unknown) {
-      const errorData = err as { data?: { error?: string } };
-      setError(errorData?.data?.error || 'Failed to send reset code. Please try again.');
+      console.error('Forgot password error:', err);
+      let errorMessage = 'Failed to send reset code. Please try again.';
+      
+      if (err && typeof err === 'object') {
+        const error = err as { 
+          data?: { 
+            message?: string; 
+            error?: string | { code?: string; message?: string }; 
+          }; 
+          status?: number; 
+          message?: string;
+        };
+        
+        if (error.data?.message) {
+          errorMessage = error.data.message;
+        } else if (error.data?.error) {
+          if (typeof error.data.error === 'string') {
+            errorMessage = error.data.error;
+          } else if (error.data.error.message) {
+            errorMessage = error.data.error.message;
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        if (error.status === 404) {
+          errorMessage = 'Service not available. Please try again later.';
+        } else if (error.status && error.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        }
+      }
+      
+      setError(errorMessage);
     }
   };
 

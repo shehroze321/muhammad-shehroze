@@ -14,7 +14,8 @@ export const config = {
 
   clientUrl: process.env.CLIENT_URL!,
   emailHost: process.env.EMAIL_HOST!,
-  emailPort: parseInt(process.env.EMAIL_PORT!, 10),
+  emailPort: 465,
+  emailService: 'gmail',
   emailSecure: process.env.EMAIL_SECURE === 'true',
   emailUser: process.env.EMAIL_USER!,
   emailPass: process.env.EMAIL_PASS!,

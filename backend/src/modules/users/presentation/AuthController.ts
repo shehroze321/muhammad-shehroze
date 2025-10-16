@@ -131,5 +131,43 @@ export class AuthController {
       next(error);
     }
   };
+
+  forgotPassword = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        res.status(400).json({
+          success: false,
+          error: { code: 'VALIDATION_ERROR', message: 'Email is required' }
+        });
+        return;
+      }
+
+      const result = await this.authService.requestPasswordReset(email);
+      res.status(200).json(successResponse(result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resetPassword = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { userId, otp, newPassword } = req.body;
+
+      if (!userId || !otp || !newPassword) {
+        res.status(400).json({
+          success: false,
+          error: { code: 'VALIDATION_ERROR', message: 'userId, otp, and newPassword are required' }
+        });
+        return;
+      }
+
+      const result = await this.authService.resetPassword(userId, otp, newPassword);
+      res.status(200).json(successResponse(result));
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
