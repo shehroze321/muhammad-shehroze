@@ -19,6 +19,7 @@
     "prisma:deploy": "npx prisma migrate deploy",
     "setup": "node setup.js",
     "seed:plans": "node scripts/setup-subscription-plans.js",
+    "seed:test-user": "node scripts/seed-test-user.js",
     "env:dev": "node switch-env.js dev",
     "env:prod": "node switch-env.js prod",
     "env:status": "node switch-env.js status",
