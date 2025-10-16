@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { KeyRound, Lock, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,8 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useResetPasswordMutation } from '@/lib/api/authApi';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export default function ResetPasswordPage() {
+function ResetPasswordPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [userId, setUserId] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -22,6 +23,13 @@ export default function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
+
+  useEffect(() => {
+    const userIdFromUrl = searchParams.get('userId');
+    if (userIdFromUrl) {
+      setUserId(userIdFromUrl);
+    }
+  }, [searchParams]);
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -65,8 +73,39 @@ export default function ResetPasswordPage() {
       await resetPassword({ userId, otp, newPassword }).unwrap();
       setSuccess(true);
     } catch (err: unknown) {
-      const errorData = err as { data?: { error?: string } };
-      setErrors({ general: errorData?.data?.error || 'Password reset failed. Please try again.' });
+      console.error('Reset password error:', err);
+      let errorMessage = 'Password reset failed. Please try again.';
+      
+      if (err && typeof err === 'object') {
+        const error = err as { 
+          data?: { 
+            message?: string; 
+            error?: string | { code?: string; message?: string }; 
+          }; 
+          status?: number; 
+          message?: string;
+        };
+        
+        if (error.data?.message) {
+          errorMessage = error.data.message;
+        } else if (error.data?.error) {
+          if (typeof error.data.error === 'string') {
+            errorMessage = error.data.error;
+          } else if (error.data.error.message) {
+            errorMessage = error.data.error.message;
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        if (error.status === 400) {
+          errorMessage = 'Invalid or expired reset code. Please request a new one.';
+        } else if (error.status && error.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        }
+      }
+      
+      setErrors({ general: errorMessage });
     }
   };
 
@@ -126,18 +165,6 @@ export default function ResetPasswordPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Email (for User ID lookup)</label>
-              <Input
-                type="email"
-                placeholder="you@example.com"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-                disabled={isLoading}
-              />
-              <p className="text-xs text-gray-500">Enter your email address</p>
-            </div>
-
             <div className="space-y-2">
               <label className="text-sm font-medium">Verification Code</label>
               <Input
@@ -243,6 +270,21 @@ export default function ResetPasswordPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-gray-50">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <ResetPasswordPageContent />
+    </Suspense>
   );
 }
 

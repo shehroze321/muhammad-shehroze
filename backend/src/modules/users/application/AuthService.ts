@@ -237,7 +237,7 @@ export class AuthService {
     return { token, message: 'Device verified successfully!' };
   }
 
-  async requestPasswordReset(email: string): Promise<{ message: string }> {
+  async requestPasswordReset(email: string): Promise<{ message: string; userId?: string }> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       return { message: 'If the email exists, a password reset code has been sent.' };
@@ -246,7 +246,10 @@ export class AuthService {
     const otp = await OTPService.createPasswordResetOTP(user.id, user.email);
     await this.emailService.sendPasswordReset(user.email, user.name, otp);
 
-    return { message: 'If the email exists, a password reset code has been sent.' };
+    return { 
+      message: 'If the email exists, a password reset code has been sent.',
+      userId: user.id 
+    };
   }
 
   async resetPassword(userId: string, otp: string, newPassword: string): Promise<{ message: string }> {

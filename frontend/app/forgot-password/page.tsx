@@ -15,6 +15,7 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [userId, setUserId] = useState('');
   
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
@@ -33,7 +34,10 @@ export default function ForgotPasswordPage() {
     }
 
     try {
-      await forgotPassword({ email }).unwrap();
+      const result = await forgotPassword({ email }).unwrap();
+      if (result.userId) {
+        setUserId(result.userId);
+      }
       setSuccess(true);
     } catch (err: unknown) {
       console.error('Forgot password error:', err);
@@ -94,7 +98,7 @@ export default function ForgotPasswordPage() {
             </Alert>
 
             <Button
-              onClick={() => router.push('/reset-password')}
+              onClick={() => router.push(`/reset-password?userId=${userId || ''}`)}
               className="w-full bg-gradient-brand hover:opacity-90"
             >
               Continue to Reset Password
